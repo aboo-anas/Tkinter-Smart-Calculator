@@ -2,13 +2,76 @@ import math
 from tkinter import *
 import tkinter as tk
 from pygame import mixer
+import speech_recognition
 
 
 mixer.init()
 
+def findNumbers(textList):
+    num_list = []
+    for num in textList:
+        try:
+            num_list.append(int(num))
+        except ValueError:
+            pass
+    return num_list
+
+
+def addition(a, b):
+    return a + b
+
+def subtraction(a, b):
+    return a - b
+
+def multiplication(a, b):
+    return a * b
+
+def division(a, b):
+    return a / b
+
+def lcm(a, b):
+    return math.lcm(a, b)
+
+def hcf(a, b):
+    return math.gcd(a, b)
+
+def mod(a, b):
+    return a % b
+
+operations = {'ADD':addition, 'ADDITION':addition, 'SUM':addition,
+              'DIFFERENCE':subtraction, 'PLUS':addition, 'SUBTRACTION':subtraction,
+              'MINUS': subtraction, 'SUBTRACT':subtraction, 'SUBTRACION':subtraction,
+              'DEDUCT':subtraction, 'REMOVE':subtraction, 'PRODUCT': multiplication,
+              'MULTIPLY': multiplication, 'MULTIPLICATION': multiplication, 'TIMES':multiplication,
+              'DIVIDE':division, 'DIVIDED':division, 'DIVISION':division}
+
 
 def mic_audio():
-    print("Ok!")
+    mixer.music.load("speaknow.mp3")
+    mixer.music.play()
+    speech = speech_recognition.Recognizer()
+    with speech_recognition.Microphone() as m:
+        try:
+            speech.adjust_for_ambient_noise(m, duration= 0.5)
+            voice = speech.listen(m)
+            text = speech.recognize_google(voice)
+            mixer.music.load("runcode.mp3")
+            mixer.music.play()
+            text_list = text.split(' ')
+            for word in text_list:
+                if word.upper() in operations.keys():
+                    value_list =   findNumbers(text_list)
+                    result = operations[word.upper()](value_list[0], value_list[1])
+                    char_entry.delete(0, END)
+                    char_entry.insert(0, result)
+
+                else:
+                    pass
+
+
+        except:
+            mixer.music.load("please try again.mp3")
+            mixer.music.play()
 
 def click(value):
     ent = char_entry.get()
